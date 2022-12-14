@@ -1,6 +1,7 @@
 import { ALL_BOOKS, ALL_GENRES } from '../queries'
 import { useQuery } from '@apollo/client'
 import { useState } from 'react'
+import { updateCache } from '../App'
 
 const BooksByGenre = ({ books, genre, genres }) => {
   return (
@@ -29,7 +30,11 @@ const BooksByGenre = ({ books, genre, genres }) => {
 
 const Books = (props) => {
   const [ genre, setGenre ] = useState(null)
-  const books = useQuery(ALL_BOOKS)
+  const books = useQuery(ALL_BOOKS, {
+    update: (cache, response) => {
+      updateCache(cache, { query: ALL_BOOKS }, response.data.addBook)
+    }
+  })
   const booksByGenres = useQuery(ALL_BOOKS, {
     variables: { genre }
   })
